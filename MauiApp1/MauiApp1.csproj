@@ -64,4 +64,12 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$(TargetFramework.Contains('-android')) != false">
+		<PackageReference Include="Couchbase.Lite.Enterprise.Support.Android" Version="3.2.1" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$(TargetFramework.Contains('-ios')) != false">
+		<PackageReference Include="Couchbase.Lite.Enterprise.Support.iOS" Version="3.2.1" />
+	</ItemGroup>
+
 </Project>

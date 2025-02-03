@@ -72,4 +72,21 @@
 		<PackageReference Include="Couchbase.Lite.Enterprise.Support.iOS" Version="3.2.1" />
 	</ItemGroup>
 
+	<!-- <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+		<UseInterpreter>true</UseInterpreter>
+	</PropertyGroup> -->
+
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+		<!-- Interpret Couchbase.Lite.Enterprise.Support.iOS.dll -->
+		<MtouchInterpreter>Couchbase.Lite.Enterprise.Support.iOS</MtouchInterpreter>
+	</PropertyGroup>
+
+	<!-- <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'maccatalyst-arm64' and '$(Configuration)' == 'Release'">
+		<UseInterpreter>true</UseInterpreter>
+	</PropertyGroup> -->
+
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'maccatalyst-arm64' and '$(Configuration)' == 'Release'">
+		<!-- Interpret Couchbase.Lite.Enterprise.Support.iOS.dll -->
+		<MtouchInterpreter>Couchbase.Lite.Enterprise.Support.iOS</MtouchInterpreter>
+	</PropertyGroup>
 </Project>

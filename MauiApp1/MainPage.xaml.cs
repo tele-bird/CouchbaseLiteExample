@@ -14,8 +14,9 @@ public partial class MainPage : ContentPage
 	{
 		try
 		{
-			var db = new Database("TestDatabase");
+			var db = new MyCouchbaseLiteDatabase();
 			ErrorLabel.Text = $"created {db.Name} at {db.Path}";
+			((MauiApp1.App)Application.Current).TestDatabase = db;
 		}
 		catch(Exception exception)
 		{

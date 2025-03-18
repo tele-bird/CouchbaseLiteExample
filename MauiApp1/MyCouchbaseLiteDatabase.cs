@@ -42,12 +42,19 @@ public class MyCouchbaseLiteDatabase : IDisposable
     public void Dispose()
     {
         Trace.WriteLine("disposing replicator");
+        if(replicatorListenerToken.HasValue)
+        {
+            replicator?.RemoveChangeListener(replicatorListenerToken.Value);
+            replicatorListenerToken = null;
+        }
         replicator?.Dispose();
         replicator = null;
         Trace.WriteLine("replicator disposed");
         Trace.WriteLine("closing database");
+        DateTime start = DateTime.UtcNow;
         database?.Close();
+        TimeSpan duration = DateTime.UtcNow.Subtract(start);
+        Trace.WriteLine($"database closed in {duration.Milliseconds} ms");
         database = null;
-        Trace.WriteLine("database closed");
     }
 }

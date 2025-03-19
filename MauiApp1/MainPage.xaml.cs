@@ -1,36 +1,18 @@
-﻿using System.Text;
-using Couchbase.Lite;
-
-namespace MauiApp1;
+﻿namespace MauiApp1;
 
 public partial class MainPage : ContentPage
 {
+	private int numTimesButtonClicked;
+
 	public MainPage()
 	{
 		InitializeComponent();
+		ErrorLabel.Text = $"button was clicked {numTimesButtonClicked} times";
 	}
 
 	private void OnCounterClicked(object sender, EventArgs e)
 	{
-		try
-		{
-			var db = new MyCouchbaseLiteDatabase();
-			ErrorLabel.Text = $"created {db.Name} at {db.Path}";
-			((MauiApp1.App)Application.Current).TestDatabase = db;
-		}
-		catch(Exception exception)
-		{
-			StringBuilder sbResult = new StringBuilder();
-			Exception? exc = exception;
-			int level = 0;
-			while(exc != null)
-			{
-				sbResult.AppendLine($"LEVEL: {level} {exc.GetType().FullName}: {exc.Message} {exc.StackTrace}");
-				sbResult.AppendLine();
-				exc = exc.InnerException;
-				++level;
-			}
-			ErrorLabel.Text = $"{sbResult}";
-		}
+		++numTimesButtonClicked;
+		ErrorLabel.Text = $"button was clicked {numTimesButtonClicked} times";
 	}
 }

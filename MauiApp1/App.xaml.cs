@@ -1,11 +1,10 @@
-﻿using Couchbase.Lite;
+﻿using System.Diagnostics;
+using Couchbase.Lite;
 
 namespace MauiApp1;
 
 public partial class App : Application
 {
-	public MyCouchbaseLiteDatabase? TestDatabase {get; set;}
-
 	public App()
 	{
 		InitializeComponent();
@@ -13,16 +12,24 @@ public partial class App : Application
 		MainPage = new AppShell();
 	}
 
+    protected override void OnStart()
+    {
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnStart)} >>");
+        base.OnStart();
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnStart)} <<");
+    }
+
     protected override void OnSleep()
     {
-		TestDatabase?.Dispose();
-        TestDatabase = null;
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnSleep)} >>");
         base.OnSleep();
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnSleep)} <<");
     }
 
     protected override void OnResume()
     {
-        TestDatabase = new MyCouchbaseLiteDatabase();
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnResume)} >>");
         base.OnResume();
+        Trace.WriteLine($"{GetType().Name}.{nameof(OnResume)} <<");
     }
 }

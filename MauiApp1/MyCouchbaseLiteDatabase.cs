@@ -1,15 +1,13 @@
 using System.Diagnostics;
 using Couchbase.Lite;
 using Couchbase.Lite.Sync;
-using MauiApp1.Extensions;
 
 namespace MauiApp1;
 
-public class MyCouchbaseLiteDatabase : IDisposable
+public class MyCouchbaseLiteDatabase
 {
     private Database? database;
-    private Replicator? replicator;
-    private ListenerToken? replicatorListenerToken;
+    private MyCouchbaseLiteReplicator? myCouchbaseLiteReplicator;
 
     public string Name => database != null ? database.Name : string.Empty;
 
@@ -29,32 +27,26 @@ public class MyCouchbaseLiteDatabase : IDisposable
         {
             Channels = new List<string> { "*" }
         });
-        replicator = new Replicator(replicatorConfiguration);
-        replicatorListenerToken = replicator.AddChangeListener(OnReplicatorStatusChanged);
-        replicator.Start();
+        myCouchbaseLiteReplicator = new MyCouchbaseLiteReplicator(replicatorConfiguration);
     }
 
-    private void OnReplicatorStatusChanged(object? sender, ReplicatorStatusChangedEventArgs e)
+    public async Task DisposeAsync(CancellationToken cancellationToken, Func<double> timeRemainingFunction)
     {
-        Trace.WriteLine($"replicator status changed to {e.Status.ToDebugString()}");
-    }
-
-    public void Dispose()
-    {
-        Trace.WriteLine("disposing replicator");
-        if(replicatorListenerToken.HasValue)
+        if(myCouchbaseLiteReplicator != null)
         {
-            replicator?.RemoveChangeListener(replicatorListenerToken.Value);
-            replicatorListenerToken = null;
+            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - disposing {nameof(MyCouchbaseLiteReplicator)}");
+            await myCouchbaseLiteReplicator.DisposeAsync(cancellationToken, timeRemainingFunction);
+            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - {nameof(MyCouchbaseLiteReplicator)} disposed");
+            myCouchbaseLiteReplicator = null;
         }
-        replicator?.Dispose();
-        replicator = null;
-        Trace.WriteLine("replicator disposed");
-        Trace.WriteLine("closing database");
-        DateTime start = DateTime.UtcNow;
-        database?.Close();
-        TimeSpan duration = DateTime.UtcNow.Subtract(start);
-        Trace.WriteLine($"database closed in {duration.Milliseconds} ms");
-        database = null;
+        if(database != null)
+        {
+            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - closing database");
+            DateTime start = DateTime.UtcNow;
+            database.Close();
+            TimeSpan duration = DateTime.UtcNow.Subtract(start);
+            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - database was closed in {duration.Milliseconds} ms");
+            database = null;
+        }
     }
 }

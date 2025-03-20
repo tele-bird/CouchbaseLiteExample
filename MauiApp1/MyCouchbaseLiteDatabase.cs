@@ -34,18 +34,18 @@ public class MyCouchbaseLiteDatabase
     {
         if(myCouchbaseLiteReplicator != null)
         {
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - disposing {nameof(MyCouchbaseLiteReplicator)}");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - disposing {nameof(MyCouchbaseLiteReplicator)}");
             await myCouchbaseLiteReplicator.DisposeAsync(cancellationToken, timeRemainingFunction);
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - {nameof(MyCouchbaseLiteReplicator)} disposed");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - {nameof(MyCouchbaseLiteReplicator)} disposed");
             myCouchbaseLiteReplicator = null;
         }
         if(database != null)
         {
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - closing database");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - closing database");
             DateTime start = DateTime.UtcNow;
             database.Close();
             TimeSpan duration = DateTime.UtcNow.Subtract(start);
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - database was closed in {duration.Milliseconds} ms");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - database was closed in {duration.Milliseconds} ms");
             database = null;
         }
     }

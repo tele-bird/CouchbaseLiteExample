@@ -19,29 +19,29 @@ public class MyCouchbaseLiteReplicator
 
     private void OnReplicatorStatusChanged(object? sender, ReplicatorStatusChangedEventArgs e)
     {
-        Trace.WriteLine($"{GetType().Name}.{nameof(OnReplicatorStatusChanged)} - replicator status changed to {e.Status.ToDebugString()}");
+        Console.WriteLine($"{GetType().Name}.{nameof(OnReplicatorStatusChanged)} - replicator status changed to {e.Status.ToDebugString()}");
     }
 
     public async Task DisposeAsync(CancellationToken cancellationToken, Func<double> timeRemainingFunction)
     {
         if(replicator != null)
         {
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - stopping replicator");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - stopping replicator");
             if(!await StopAsync(cancellationToken, timeRemainingFunction))
             {
                 cancellationToken.ThrowIfCancellationRequested();
             }
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - replicator stopped");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - replicator stopped");
             if(replicatorListenerToken.HasValue)
             {
-                Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - removing listener");
+                Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - removing listener");
                 replicator.RemoveChangeListener(replicatorListenerToken.Value);
-                Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - listener removed");
+                Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - listener removed");
                 replicatorListenerToken = null;
             }
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - disposing replicator");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - disposing replicator");
             replicator?.Dispose();
-            Trace.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - replicator disposed");
+            Console.WriteLine($"{GetType().Name}.{nameof(DisposeAsync)} - replicator disposed");
             replicator = null;
         }
     }
@@ -53,7 +53,7 @@ public class MyCouchbaseLiteReplicator
         bool? result = null;
         var listenerToken = replicator.AddChangeListener((sender, e) =>
         {
-            Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - replicator status changed to {e.Status.Activity}");
+            Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - replicator status changed to {e.Status.Activity}");
             if(e.Status.Activity == ReplicatorActivityLevel.Stopped)
             {
                 result = true;
@@ -64,10 +64,10 @@ public class MyCouchbaseLiteReplicator
         {
             while(!result.HasValue)
             {
-				Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - waiting for replicator to stop.  time remaining: {timeRemainingFunction.Invoke()}");
+				Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - waiting for replicator to stop.  time remaining: {timeRemainingFunction.Invoke()}");
                 await Task.Delay(50, cancellationToken);
             }
-            Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - result changed to {result}");
+            Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - result changed to {result}");
         }
         catch(TaskCanceledException e)
         {
@@ -81,11 +81,11 @@ public class MyCouchbaseLiteReplicator
         }
         finally
         {
-            Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - removing listener");
+            Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - removing listener");
             replicator.RemoveChangeListener(listenerToken);
-            Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - listener removed");
+            Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - listener removed");
         }
-        Trace.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - returning result: {result.Value} with exception: {exception?.Message}");
+        Console.WriteLine($"{GetType().Name}.{nameof(StopAsync)} - returning result: {result.Value} with exception: {exception?.Message}");
         return result.Value;
     }
 }

@@ -12,9 +12,9 @@ public class AppDelegate : MauiUIApplicationDelegate
 
 	public AppDelegate()
 	{
-        Trace.WriteLine($"{GetType().Name}.ctor >> creating {nameof(MyCouchbaseLiteDatabase)}");
+        Console.WriteLine($"{GetType().Name}.ctor >> creating {nameof(MyCouchbaseLiteDatabase)}");
         testDatabase = new MyCouchbaseLiteDatabase();
-        Trace.WriteLine($"{GetType().Name}.ctor >> created: {testDatabase?.Name}");
+        Console.WriteLine($"{GetType().Name}.ctor >> created: {testDatabase?.Name}");
 	}
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
@@ -27,7 +27,7 @@ public class AppDelegate : MauiUIApplicationDelegate
 			var backgroundTaskName = "DatabaseCloseTask";
 			taskId = UIApplication.SharedApplication.BeginBackgroundTask(backgroundTaskName,() =>
 			{
-				Trace.WriteLine($"{GetType().Name}.{backgroundTaskName} - background time expired.  time remaining: {UIApplication.SharedApplication.BackgroundTimeRemaining}. ending background task {taskId.Value}");
+				Console.WriteLine($"{GetType().Name}.{backgroundTaskName} - background time expired.  time remaining: {UIApplication.SharedApplication.BackgroundTimeRemaining}. ending background task {taskId.Value}");
 				cts.Cancel();
 			});
 			Task.Factory.StartNew(async (state) => 
@@ -41,15 +41,15 @@ public class AppDelegate : MauiUIApplicationDelegate
 				catch(AggregateException e) // thrown from Task.Delay(500, cancellationToken);
 				{
 					var innerException = e.InnerExceptions[0];
-					Trace.WriteLine($"{GetType().Name}.{backgroundTaskName} - caught exception: {innerException.GetType().Name}:{innerException.Message}");
+					Console.WriteLine($"{GetType().Name}.{backgroundTaskName} - caught exception: {innerException.GetType().Name}:{innerException.Message}");
 				}
 				catch(OperationCanceledException e) // thrown from cancellationToken.ThrowIfCancellationRequested();
 				{
-					Trace.WriteLine($"{GetType().Name}.{backgroundTaskName} - caught exception: {e.GetType().Name}:{e.Message}");
+					Console.WriteLine($"{GetType().Name}.{backgroundTaskName} - caught exception: {e.GetType().Name}:{e.Message}");
 				}
 				finally
 				{
-					Trace.WriteLine($"{GetType().Name}.{backgroundTaskName} - ending background task {taskId.Value}: {backgroundTaskName}");
+					Console.WriteLine($"{GetType().Name}.{backgroundTaskName} - ending background task {taskId.Value}: {backgroundTaskName}");
 					UIApplication.SharedApplication.EndBackgroundTask(taskId.Value);
 				}
 			}, cts.Token);
@@ -61,21 +61,21 @@ public class AppDelegate : MauiUIApplicationDelegate
     {
 		if(testDatabase == null)
 		{
-			Trace.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} >> creating {nameof(MyCouchbaseLiteDatabase)}");
+			Console.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} >> creating {nameof(MyCouchbaseLiteDatabase)}");
 			testDatabase = new MyCouchbaseLiteDatabase();
-			Trace.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} << created: {testDatabase?.Name}");
+			Console.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} << created: {testDatabase?.Name}");
 		}
 		else
 		{
-			Trace.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} >> {nameof(MyCouchbaseLiteDatabase)} is not null: {testDatabase.Name}");
+			Console.WriteLine($"{GetType().Name}.{nameof(WillEnterForeground)} >> {nameof(MyCouchbaseLiteDatabase)} is not null: {testDatabase.Name}");
 		}
         base.WillEnterForeground(application);
     }
 
     public override void WillTerminate(UIApplication application)
     {
-		Trace.WriteLine($"{GetType().Name}.{nameof(WillTerminate)} >>");
+		Console.WriteLine($"{GetType().Name}.{nameof(WillTerminate)} >>");
         base.WillTerminate(application);
-		Trace.WriteLine($"{GetType().Name}.{nameof(WillTerminate)} <<");
+		Console.WriteLine($"{GetType().Name}.{nameof(WillTerminate)} <<");
     }
 }

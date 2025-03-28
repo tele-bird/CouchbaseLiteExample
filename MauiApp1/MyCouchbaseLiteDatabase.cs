@@ -21,6 +21,9 @@ public class MyCouchbaseLiteDatabase : IDisposable
 
     public MyCouchbaseLiteDatabase(EventHandler<ReplicatorStatusChangedEventArgs> eventHandler)
     {
+        Database.Log.Console.Level = Couchbase.Lite.Logging.LogLevel.Verbose;
+        Database.Log.Console.Domains = Couchbase.Lite.Logging.LogDomain.Couchbase | Couchbase.Lite.Logging.LogDomain.Database;
+
         database = new Database("TestDatabase");
         eventsCollection = database.CreateCollection("events", "event");
         var replicatorConfiguration = new ReplicatorConfiguration(new URLEndpoint(new Uri("wss://k4bz2uxpwsjwp4mg.apps.cloud.couchbase.com:4984/event-endpoint/")))

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Couchbase.Lite;
+using Microsoft.Extensions.Logging;
 
 namespace MauiApp1;
 

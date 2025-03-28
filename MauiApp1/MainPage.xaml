@@ -25,14 +25,24 @@
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
 
             <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
+                x:Name="Button"
+                Clicked="OnButtonClicked"
                 HorizontalOptions="Fill" />
 
             <Label
-                x:Name="ErrorLabel" />
+                x:Name="StatusLabel"
+                FontAttributes="Bold" />
+
+            <!-- <Button
+                x:Name="QueryButton"
+                IsEnabled="False"
+                Text="Query Events Collection"
+                Clicked="OnQueryButtonClicked"
+                HorizontalOptions="Fill" /> -->
+
+            <Label
+                x:Name="QueryResultsLabel"
+                TextColor="Gray" />
         </VerticalStackLayout>
     </ScrollView>
 

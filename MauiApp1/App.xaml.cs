@@ -4,25 +4,11 @@ namespace MauiApp1;
 
 public partial class App : Application
 {
-	public MyCouchbaseLiteDatabase? TestDatabase {get; set;}
-
 	public App()
 	{
 		InitializeComponent();
-
+        Database.Log.Console.Level = Couchbase.Lite.Logging.LogLevel.Verbose;
+        Database.Log.Console.Domains = Couchbase.Lite.Logging.LogDomain.Couchbase | Couchbase.Lite.Logging.LogDomain.Database;
 		MainPage = new AppShell();
 	}
-
-    protected override void OnSleep()
-    {
-		TestDatabase?.Dispose();
-        TestDatabase = null;
-        base.OnSleep();
-    }
-
-    protected override void OnResume()
-    {
-        TestDatabase = new MyCouchbaseLiteDatabase();
-        base.OnResume();
-    }
 }

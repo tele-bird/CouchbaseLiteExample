@@ -13,7 +13,10 @@ public class MyCouchbaseLiteDatabase : IDisposable
     private ListenerToken? replicatorListenerToken;
     private ListenerToken? externalReplicatorListenerToken;
     private Collection eventsCollection;
-    private ListenerToken? queryListenerToken;
+    private IQuery? query;
+    private ListenerToken? queryListenerToken;    
+    
+    private const string eventsAlias = "e";
 
     public string Name => database != null ? database.Name : string.Empty;
 
@@ -49,6 +52,8 @@ public class MyCouchbaseLiteDatabase : IDisposable
 
     public void Dispose()
     {
+        Trace.WriteLine("closing live query");
+        CloseLiveQuery();
         RemoveReplicatorListeners();
         Trace.WriteLine("disposing replicator");
         replicator?.Dispose();
@@ -65,7 +70,6 @@ public class MyCouchbaseLiteDatabase : IDisposable
     private void RemoveReplicatorListeners()
     {
         Trace.WriteLine("removing replicator listeners");
-        RemoveReplicatorQueryListeners();
         if(replicatorListenerToken.HasValue)
         {
             replicator?.RemoveChangeListener(replicatorListenerToken.Value);
@@ -78,16 +82,21 @@ public class MyCouchbaseLiteDatabase : IDisposable
         }
     }
 
-    private void RemoveReplicatorQueryListeners()
+    private void CloseLiveQuery()
     {
-        queryListenerToken?.Remove();
+        if(query != null && queryListenerToken.HasValue)
+        {
+            query.RemoveChangeListener(queryListenerToken.Value);
+        }
         queryListenerToken = null;
+        query?.Dispose();
+        query = null;
     }
 
     public void StopReplicator()
     {
         ArgumentNullException.ThrowIfNull(replicator);
-        // RemoveReplicatorListeners();
+        CloseLiveQuery();
         replicator.Stop();
     }
 
@@ -101,9 +110,8 @@ public class MyCouchbaseLiteDatabase : IDisposable
     public IResultSet QueryForEvents(string metaIdAlias, EventHandler<QueryChangedEventArgs> eventHandler, out string explain)
     {
         ArgumentNullException.ThrowIfNull(metaIdAlias);
-        RemoveReplicatorQueryListeners();
-        var eventsAlias = "e";
-        var query = QueryBuilder.Select(SelectResult.Expression(Meta.ID.From(eventsAlias)).As(metaIdAlias))
+        CloseLiveQuery();
+        query = QueryBuilder.Select(SelectResult.Expression(Meta.ID.From(eventsAlias)).As(metaIdAlias))
             .From(DataSource.Collection(eventsCollection).As(eventsAlias));
         explain = query.Explain();
         queryListenerToken = query.AddChangeListener(eventHandler);

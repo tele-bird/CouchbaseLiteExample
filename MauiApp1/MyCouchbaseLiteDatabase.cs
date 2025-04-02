@@ -10,7 +10,6 @@ public class MyCouchbaseLiteDatabase : IDisposable
 {
     private Database? database;
     private Replicator? replicator;
-    private ListenerToken? replicatorListenerToken;
     private ListenerToken? externalReplicatorListenerToken;
     private Collection eventsCollection;
     private IQuery? query;
@@ -40,14 +39,8 @@ public class MyCouchbaseLiteDatabase : IDisposable
             Channels = new List<string> { "*" }
         });
         replicator = new Replicator(replicatorConfiguration);
-        replicatorListenerToken = replicator.AddChangeListener(OnReplicatorStatusChanged);
         externalReplicatorListenerToken = replicator.AddChangeListener(eventHandler);
         replicator.Start();
-    }
-
-    private void OnReplicatorStatusChanged(object? sender, ReplicatorStatusChangedEventArgs e)
-    {
-        Trace.WriteLine($"replicator status changed to {e.Status.ToDebugString()}");
     }
 
     public void Dispose()
@@ -70,11 +63,6 @@ public class MyCouchbaseLiteDatabase : IDisposable
     private void RemoveReplicatorListeners()
     {
         Trace.WriteLine("removing replicator listeners");
-        if(replicatorListenerToken.HasValue)
-        {
-            replicator?.RemoveChangeListener(replicatorListenerToken.Value);
-            replicatorListenerToken = null;
-        }
         if(externalReplicatorListenerToken.HasValue)
         {
             replicator?.RemoveChangeListener(externalReplicatorListenerToken.Value);

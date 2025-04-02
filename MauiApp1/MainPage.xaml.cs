@@ -9,7 +9,6 @@ public partial class MainPage : ContentPage
 {
 	private MyCouchbaseLiteDatabase? testDatabase;
 
-	private const string notInitializedText = "new MyCouchbaseLiteDatabase()";
 	private const string stopText = $"replicator.Stop()";
 	private const string startText = $"replicator.Start()";
 	private const string metaIdAlias = "metaId";
@@ -17,10 +16,28 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-		Button.Text = notInitializedText;
+		InitializeDatabase();
 	}
 
-    private void OnReplicatorStatusChanged(object? sender, ReplicatorStatusChangedEventArgs e)
+	private void InitializeDatabase()
+	{
+		Button.Text = stopText;
+		testDatabase = new MyCouchbaseLiteDatabase(OnReplicatorStatusChanged);
+		PerformQuery();
+	}
+
+	public void Pause()
+	{
+		testDatabase?.Dispose();
+		testDatabase = null;
+	}
+
+	public void Resume()
+	{
+		InitializeDatabase();
+	}
+
+	private void OnReplicatorStatusChanged(object? sender, ReplicatorStatusChangedEventArgs e)
     {
 		Trace.WriteLine($"{GetType().Name}.{nameof(OnReplicatorStatusChanged)} >> {e.Status.Activity}");
 		MainThread.BeginInvokeOnMainThread(()=> {
@@ -72,12 +89,6 @@ public partial class MainPage : ContentPage
 		{
 			switch(Button.Text)
 			{
-				case notInitializedText:
-				{
-					testDatabase = new MyCouchbaseLiteDatabase(OnReplicatorStatusChanged);
-					PerformQuery();
-					break;
-				}
 				case stopText:
 				{
 					testDatabase!.StopReplicator();

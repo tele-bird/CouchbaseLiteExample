@@ -27,18 +27,12 @@
             <Button
                 x:Name="Button"
                 Clicked="OnButtonClicked"
+                IsEnabled="False"
                 HorizontalOptions="Fill" />
 
             <Label
                 x:Name="StatusLabel"
                 FontAttributes="Bold" />
-
-            <!-- <Button
-                x:Name="QueryButton"
-                IsEnabled="False"
-                Text="Query Events Collection"
-                Clicked="OnQueryButtonClicked"
-                HorizontalOptions="Fill" /> -->
 
             <Label
                 x:Name="QueryResultsLabel"
